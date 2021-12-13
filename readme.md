@@ -66,7 +66,7 @@ yum -y install bzip2-devel
     php -v
 
     6、查看php.ini 文件的默认路径
-    php -i | grep php.ini
+   php --ini
     把源码中的php.ini-development 复制到 /home/work/soft/php7/bin/php/lib/php.ini 文件夹
 
 ## 安装swoole4
