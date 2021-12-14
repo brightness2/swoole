@@ -128,7 +128,7 @@ composer require firebase/php-jwt
 ├── composer.json
 ├── composer.lock
 ├── public
-│   └── index.php
+│   └── index.php
 ├── server
 └── vendor
     ├── autoload.php

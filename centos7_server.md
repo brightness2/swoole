@@ -183,6 +183,8 @@ which apxs
 cd php-7.4.26
 ./configure –prefix=/usr/local/php  --with-apxs2=/usr/bin/apxs
 ```
+必须添加参数--with-apxs2，使得php作为apache的模块运行
+--with-apxs2=/usr/bin/apxs
 ```
 常用参数
 –prefix=/usr/local/php                  php安装目录
@@ -294,7 +296,6 @@ php -v
 修改 /etc/httpd/conf/httpd.conf 文件
 在最后增加
 ```
-IncludeOptional conf.d/*.conf
 LoadModule php7_module modules/libphp7.so
 <FilesMatch \.php$>
 	SetHandler application/x-httpd-php
