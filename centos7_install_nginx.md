@@ -139,7 +139,7 @@ netstat -ntulp |grep 80   //查看所有1935端口使用情况·
 ## php 编译与安装
 1、进入php 源码包
 ```
-./configure -prefix=/usr/local/php --enable-fpm
+./configure -prefix=/usr/local/php --enable-fpm --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd 
 
 make
 make install

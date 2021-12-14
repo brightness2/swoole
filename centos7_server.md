@@ -181,7 +181,7 @@ which apxs
 
 
 cd php-7.4.26
-./configure –prefix=/usr/local/php  --with-apxs2=/usr/bin/apxs
+./configure –prefix=/usr/local/php  --with-apxs2=/usr/bin/apxs --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd 
 ```
 必须添加参数--with-apxs2，使得php作为apache的模块运行
 --with-apxs2=/usr/bin/apxs
