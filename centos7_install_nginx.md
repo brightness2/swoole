@@ -37,10 +37,15 @@ tar -zxvf nginx-1.12.0.tar.gz
 cd nginx-1.12.0
 
 其实在 nginx-1.12.0 版本中你就不需要去配置相关东西，默认就可以了。当然，如果你要自己配置目录也是可以的。
-1.使用默认配置
+1.使用配置
 
-./configure
-2.自定义配置（不推荐）
+./configure --prefix=/usr/local/nginx \
+--with-stream \
+--with-stream_ssl_module \
+--with-http_ssl_module \
+--with-http_v2_module \
+--with-threads
+2.自定义配置
 
 ./configure \
 --prefix=/usr/local/nginx \
@@ -131,42 +136,60 @@ netstat -ntulp |grep 80   //查看所有1935端口使用情况·
 
 # ngnix + php
 
+## php 编译与安装
+1、进入php 源码包
+```
+./configure -prefix=/usr/local/php --enable-fpm
+
+make
+make install
+必须 开启fpm,nginx通过php-fpm服务监听运行php文件
+
+```
+2、把php源码包的php.ini-production 文件复制到/usr/local/php/lib/php.ini
+```
+cp php.ini-production /usr/local/php/lib/php.ini
+```
+3、把php源码包的 sapi/fpm/init.d.php-fpm 文件复制到 /etc/init.d/php-fpm
+```
+cp init.d.php-fpm /etc/init.d/php-fpm
+
+chmod +x /etc/init.d/php-fpm 
+```
+4、php安装路径中 /usr/loacl/php 的 fpm配置
+```
+cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf
+cp /usr/local/php/etc/php-fpm.d/www.conf.default /usr/local/php/etc/php-fpm.d/www.conf
+查看是否安装成功
+ps -ef|grep php-fpm
+php-fpm命令(开启/重启/停止):
+/etc/init.d/php-fpm start/restart/stop
+添加开机启动
+chkconfig --add php-fpm
+查看是否添加成功
+chkconfig | grep php-fpm
+
+注：该输出结果只显示 SysV 服务，并不包含
+原生 systemd 服务。SysV 配置数据
+可能被原生 systemd 配置覆盖。 
+
+      要列出 systemd 服务，请执行 'systemctl list-unit-files'。
+      查看在具体 target 启用的服务请执行
+      'systemctl list-dependencies [target]'。
+
+php-fpm        	0:关	1:关	2:开	3:开	4:开	5:开	6:关
+2,3,4,5登录为开启状态,表示添加成功,如果为关闭状态可以用chkconfig php-fpm on开启
+```
+
+
 ## 配置nginx可以运行php文件
-
-### 配置
-1、配置php.ini
-首先定位配置文件php.ini 的位置。
-
-php --ini | grep Loaded
-
-编辑php.ini
-cd /home/work/soft/php7/lib/
-vi php.ini
-编辑fix_pathinfo的设置内容。
-在这个文件中，找到设置cgi.fix_pathinfo的参数。 这将用分号（;）注释掉，默认设置为“1”。
-这是一个非常不安全的设置，因为它告诉PHP尝试执行最近的文件，如果找不到请求的PHP文件，它可以找到它。 这可以允许用户以一种允许他们执行不应允许执行的脚本的方式制作PHP请求。
-取消注释并将其设置为“0”，如下所示：
-
-
-2、配置nginx的PHP解析
-
-vi /usr/local/nginx/conf/nginx.conf
-
-
-注意，这里用户用从nginx改为www-data。
-
-修改前	修改后	修改目的
-user nginx;	user www-data www-data;	为了保证解析php时，对/run/php/php7.2-fpm.sock有正确的存取权限。
-nginx安装好之后，会创建/etc/nginx/conf.d/default.conf文件，里面记录网站的配置信息。
-
-
-修改内容
-
-将root(网站根目录) 设置放在外面
-将index设置放在外面
-打开.php文件的解析设置内容。就是“ location ~ .php$ { … }”这一段内容
-修改前	|修改后|	修改目的
-#fastcgi_pass localhost:9000|	fastcgi_pass unix:/run/php/php7.2-fpm.sock;|	默认安装是sock方式
-#fastcgi_param SCRIPT_FILENAME /scripts$fastcgi_script_name;|	fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;	|
-php-fpm的fpm 指FastCGI Process Manager：FastCGI进程管理器，是一种面向高负载的PHP解释器。现在算是主流的PHP解释器。关于PHP-FPM更多的资料可以参考nginx 如何解析php文件php-fpm的解释。
-
+修改文件 /usr/local/nginx/conf/nginx.conf
+```
+location ~ \.php$ {
+      root /usr/local/nginx/html;     #网站目录
+      fastcgi_pass 127.0.0.1:9000;
+      fastcgi_index index.php;
+      fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+      include fastcgi_params;
+}
+```
