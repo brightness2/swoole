@@ -146,6 +146,15 @@ make install
 必须 开启fpm,nginx通过php-fpm服务监听运行php文件
 
 ```
+安装pdo_mysql 扩展
+```
+进入源码的pdo_mysql文件夹，ext/pdo_mysql
+执行phpize
+/usr/local/php/bin/phpize 
+./configure --with-php-config=/usr/local/php/bin/php-config --with-pdo-mysql=mysqlnd
+make
+make install
+```
 2、把php源码包的php.ini-production 文件复制到/usr/local/php/lib/php.ini
 ```
 cp php.ini-production /usr/local/php/lib/php.ini

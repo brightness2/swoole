@@ -185,6 +185,8 @@ cd php-7.4.26
 ```
 必须添加参数--with-apxs2，使得php作为apache的模块运行
 --with-apxs2=/usr/bin/apxs
+--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd 
+是连接mysql扩展
 ```
 常用参数
 –prefix=/usr/local/php                  php安装目录
@@ -292,6 +294,15 @@ php -v
 ```
 把源码中的php.ini-development 复制到 /usr/local/php/lib/php.ini 文件夹
 
+安装pdo_mysql 扩展
+```
+进入源码的pdo_mysql文件夹，ext/pdo_mysql
+执行phpize
+/usr/local/php/bin/phpize 
+./configure --with-php-config=/usr/local/php/bin/php-config --with-pdo-mysql=mysqlnd
+make
+make install
+```
 ## apache 结合php 运行php文件
 修改 /etc/httpd/conf/httpd.conf 文件
 在最后增加
