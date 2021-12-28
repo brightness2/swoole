@@ -202,3 +202,39 @@ location ~ \.php$ {
       include fastcgi_params;
 }
 ```
+
+## 配置nginx 支持PATHINFO
+修改文件 /usr/local/nginx/conf/nginx.conf
+```
+ location ~ \.php { #去掉了$符号
+                root /usr/local/nginx/html;     #网站目录
+                fastcgi_pass 127.0.0.1:9000;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                include fastcgi_params;
+                #增加以下配置
+                #定义变量 $path_info ，用于存放pathinfo信息
+                set $path_info "";
+                #定义变量 $real__name，用于存放真实地址
+                set $real__name $fastcgi_script_name;
+                #如果地址与引号内的正则表达式匹配
+                if ($fastcgi_script_name ~ "^(.+?.php)(/.+)$") {
+
+                    #将文件地址赋值给变量 $real__name
+
+                    set $real__name $1;
+
+                    #将文件地址后的参数赋值给变量 $path_info
+
+                    set $path_info $2;
+
+                }
+
+                #配置fastcgi的一些参数
+                fastcgi_param _NAME $real__name;
+
+                fastcgi_param PATH_INFO $path_info;
+
+                
+        }
+```
